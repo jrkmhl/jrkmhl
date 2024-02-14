@@ -76,6 +76,6 @@ class Sol:
 
 #
 obj = Sol()
-# print(obj.longestPalindrome("babad"))
+print(obj.longestPalindrome("babad"))
 
 obj.unique_sub_str("pwwkew")
