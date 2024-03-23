@@ -1,0 +1,52 @@
+Use the Salesstore.csv & Product.csv datasets to generate output dataset using SQL;
+
+1. Create an output with following fields
+    a. Order_Month
+    b. Product_Name
+    c. Product_Category
+    d. Sum of Order_Qty
+    e. Sum of Sales
+    ------------------------------
+ select ss.order_month,
+	pd.product_name,
+	pd.product_category,
+	pd.product_category,
+	sum(order_quantity) as total_order_qty,
+	sum(sales) as total_sales
+from
+salesstore ss
+left join product pd on ss.product_name and pd.product_name
+group by  ss.order_month,pd.product_name,pd.product_category,pd.product_category
+----------------------------------------------------------
+
+2. Add Cumulative Order_Qty and Sales from Jan 1 2024 till date
+--------------
+select
+ordr_smry.order_month,
+ordr_smry.product_name,
+ordr_smry.product_category,
+ordr_smry.product_category,
+cumulative_by_month.cumulative_sum_by_month
+	from
+(select ss.order_month,
+	pd.product_name,
+	pd.product_category,
+	pd.product_category,
+	sum(Order_Quantity) as order_qty
+from salesstore ss
+left join product pd on ss.product_name and pd.product_name
+group by  ss.order_month,pd.product_name,pd.product_category,pd.product_category
+)ordr_smry
+left join
+(select
+order_month,
+sum(ordr_qty_by_month) over(order by order_month desc rows between unbounded preceding and current row) as  cumulative_sum_by_month
+from
+(select
+order_month,
+sum(Order_Quantity) as ordr_qty_by_month,
+from salesstore group by salesstore)sales_per_month
+)cumulative_by_month on ordr_smry.order_month =cumulative_by_month.order_month
+-------------------------------------------------------------------------------------
+3. Add Cumulative Order_Qty and Sales for corresponding Customer_Segment for the same month
+4. Add Marketshare percentage based on Order Quantity for same Customer_Segment of the order for the same month
